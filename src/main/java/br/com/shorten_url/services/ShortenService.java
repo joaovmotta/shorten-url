@@ -14,6 +14,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import static br.com.shorten_url.infra.exceptions.ExceptionMessages.SHORT_CODE_NOT_FOUND;
@@ -40,6 +41,7 @@ public class ShortenService {
 
         shorten.setShortCode(shortCode);
         shorten.setTtl(buildTTL());
+        shorten.setCreationDate(ZonedDateTime.now());
 
         repository.save(shorten);
 
@@ -49,7 +51,7 @@ public class ShortenService {
                 .pathSegment(shorten.getShortCode())
                 .toUriString();
 
-        return new ShortUrlResponse(shorten.getUrl(), shortUrl);
+        return new ShortUrlResponse(shorten.getUrl(), shortUrl, shorten.getCreationDate());
     }
 
     public Shorten get(String shortCode) {

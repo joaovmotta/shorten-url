@@ -6,15 +6,18 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
+import java.time.ZonedDateTime;
+
 @DynamoDbBean
 public class Shorten {
-
 
     private String url;
 
     private String shortCode;
 
     private Long ttl;
+
+    private ZonedDateTime creationDate;
 
     @DynamoDbSortKey
     @DynamoDbAttribute("url")
@@ -26,6 +29,15 @@ public class Shorten {
     @DynamoDbAttribute("shortCode")
     public String getShortCode() {
         return shortCode;
+    }
+
+    @DynamoDbAttribute("creationDate")
+    public ZonedDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(ZonedDateTime creationDate) {
+        this.creationDate = creationDate;
     }
 
     public Shorten(ShortenUrlRequest request){
