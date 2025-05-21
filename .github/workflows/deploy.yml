@@ -19,7 +19,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Set up JDK 17
@@ -41,12 +40,16 @@ jobs:
 
       - name: Download ECS task definition
         run: |
-          aws ecs describe-task-definition --task-definition ${{ secrets.ECS_TASK_DEFINITION }} > task-def.json
+          aws ecs describe-task-definition --task-definition ${{ secrets.ECS_TASK_DEFINITION }} --query taskDefinition > task-def.json
 
       - name: Update task definition with new image
         run: |
           IMAGE_URI="${{ secrets.ECR_REPOSITORY }}:latest"
-          jq --arg IMAGE_URI "$IMAGE_URI" '.taskDefinition.containerDefinitions[0].image = $IMAGE_URI' task-def.json > new-task-def.json
+          cat task-def.json | \
+            jq --arg IMAGE_URI "$IMAGE_URI" \
+            '.containerDefinitions[0].image = $IMAGE_URI
+            | del(.status, .revision, .taskDefinitionArn, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' \
+            > new-task-def.json
 
       - name: Register new task definition
         id: register-task-def
