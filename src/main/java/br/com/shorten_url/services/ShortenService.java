@@ -42,6 +42,7 @@ public class ShortenService {
         shorten.setShortCode(shortCode);
         shorten.setTtl(buildTTL());
         shorten.setCreationDate(ZonedDateTime.now());
+        shorten.setUrl(buildUrl(shorten.getUrl()));
 
         repository.save(shorten);
 
@@ -52,6 +53,15 @@ public class ShortenService {
                 .toUriString();
 
         return new ShortUrlResponse(shorten.getUrl(), shortUrl, shorten.getCreationDate());
+    }
+
+    private String buildUrl(String url){
+
+        if(url.startsWith("http://") || url.startsWith("https://")){
+            return url;
+        }
+
+        else return "http://" + url;
     }
 
     public Shorten get(String shortCode) {
