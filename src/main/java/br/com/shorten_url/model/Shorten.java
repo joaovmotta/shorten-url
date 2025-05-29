@@ -40,11 +40,6 @@ public class Shorten {
         this.creationDate = creationDate;
     }
 
-    public Shorten(ShortenUrlRequest request){
-
-        this.url = request.url();
-    }
-
     public Shorten(){};
 
     public void setUrl(String url) {

@@ -2,6 +2,7 @@ package br.com.shorten_url.services;
 
 import br.com.shorten_url.infra.exceptions.NotFoundException;
 import br.com.shorten_url.model.Shorten;
+import br.com.shorten_url.model.requests.ShortenUrlRequest;
 import br.com.shorten_url.model.responses.ShortUrlResponse;
 import br.com.shorten_url.repositories.ShortenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,11 @@ public class ShortenService {
         this.repository = repository;
     }
 
-    public ShortUrlResponse save(Shorten shorten) {
+    public ShortUrlResponse save(ShortenUrlRequest shortenUrlRequest) {
 
-        String shortCode = this.shorten(shorten.getUrl());
+        String shortCode = this.getShortCode(shortenUrlRequest);
+
+        Shorten shorten = new Shorten();
 
         shorten.setShortCode(shortCode);
         shorten.setTtl(buildTTL());
@@ -55,13 +58,21 @@ public class ShortenService {
         return new ShortUrlResponse(shorten.getUrl(), shortUrl, shorten.getCreationDate());
     }
 
-    private String buildUrl(String url){
+    private String getShortCode(ShortenUrlRequest urlRequest) {
 
-        if(url.startsWith("http://") || url.startsWith("https://")){
-            return url;
+        if (urlRequest.custom() != null && this.get(urlRequest.custom()) == null) {
+
+            return urlRequest.custom();
         }
 
-        else return "http://" + url;
+        return this.shorten(urlRequest.url());
+    }
+
+    private String buildUrl(String url) {
+
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            return url;
+        } else return "http://" + url;
     }
 
     public Shorten get(String shortCode) {
