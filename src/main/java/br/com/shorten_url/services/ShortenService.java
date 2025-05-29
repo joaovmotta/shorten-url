@@ -45,7 +45,7 @@ public class ShortenService {
         shorten.setShortCode(shortCode);
         shorten.setTtl(buildTTL());
         shorten.setCreationDate(ZonedDateTime.now());
-        shorten.setUrl(buildUrl(shorten.getUrl()));
+        shorten.setUrl(buildUrl(shortenUrlRequest.url()));
 
         repository.save(shorten);
 
