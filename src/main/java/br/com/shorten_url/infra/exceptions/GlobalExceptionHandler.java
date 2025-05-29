@@ -9,8 +9,8 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> handleNotFound(NotFoundException ex) {
+    @ExceptionHandler(HttpException.class)
+    public ResponseEntity<?> handleHttpException(HttpException ex) {
 
         Map<String, Object> response = Map.of("code", ex.getCode(),
                 "message", ex.getMessage());
