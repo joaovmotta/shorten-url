@@ -51,7 +51,8 @@ public class ShortenService {
 
         repository.save(shorten);
 
-        shorten = this.get(shortCode);
+        shorten = this.get(shortCode)
+                .orElseThrow(() -> new NotFoundException(SHORT_CODE_NOT_FOUND));
 
         String shortUrl = UriComponentsBuilder.fromUriString(baseUrl)
                 .pathSegment(shorten.getShortCode())
@@ -62,10 +63,10 @@ public class ShortenService {
 
     private String getShortCode(ShortenUrlRequest urlRequest) {
 
-        if (urlRequest.custom() != null && this.get(urlRequest.custom()) == null) {
+        if (urlRequest.custom() != null && this.get(urlRequest.custom()).isEmpty()) {
 
             return urlRequest.custom();
-        }else if (urlRequest.custom() != null && this.get(urlRequest.custom()) != null) {
+        }else if (urlRequest.custom() != null && this.get(urlRequest.custom()).isPresent()) {
 
             throw new BadRequestException(CUSTOM_CODE_ALREADY_IN_USE);
         }
@@ -80,10 +81,9 @@ public class ShortenService {
         } else return "http://" + url;
     }
 
-    public Shorten get(String shortCode) {
+    public Optional<Shorten> get(String shortCode) {
 
-        return Optional.ofNullable(repository.get(shortCode))
-                .orElseThrow(() -> new NotFoundException(SHORT_CODE_NOT_FOUND));
+        return Optional.ofNullable(repository.get(shortCode));
     }
 
     private Long buildTTL() {
