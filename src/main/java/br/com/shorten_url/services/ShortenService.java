@@ -1,5 +1,6 @@
 package br.com.shorten_url.services;
 
+import br.com.shorten_url.infra.exceptions.BadRequestException;
 import br.com.shorten_url.infra.exceptions.NotFoundException;
 import br.com.shorten_url.model.Shorten;
 import br.com.shorten_url.model.requests.ShortenUrlRequest;
@@ -18,6 +19,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+import static br.com.shorten_url.infra.exceptions.ExceptionMessages.CUSTOM_CODE_ALREADY_IN_USE;
 import static br.com.shorten_url.infra.exceptions.ExceptionMessages.SHORT_CODE_NOT_FOUND;
 
 @Service
@@ -63,6 +65,9 @@ public class ShortenService {
         if (urlRequest.custom() != null && this.get(urlRequest.custom()) == null) {
 
             return urlRequest.custom();
+        }else if (urlRequest.custom() != null && this.get(urlRequest.custom()) != null) {
+
+            throw new BadRequestException(CUSTOM_CODE_ALREADY_IN_USE);
         }
 
         return this.shorten(urlRequest.url());
